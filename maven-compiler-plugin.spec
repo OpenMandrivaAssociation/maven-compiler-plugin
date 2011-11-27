@@ -1,6 +1,6 @@
 Name:           maven-compiler-plugin
 Version:        2.3.2
-Release:        3
+Release:        5
 Summary:        Maven Compiler Plugin
 
 Group:          Development/Java
