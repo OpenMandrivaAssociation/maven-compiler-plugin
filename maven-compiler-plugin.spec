@@ -1,35 +1,25 @@
+%{?_javapackages_macros:%_javapackages_macros}
 Name:           maven-compiler-plugin
-Version:        2.3.2
-Release:        5
+Version:        3.1
+Release:        3.1%{?dist}
 Summary:        Maven Compiler Plugin
 
-Group:          Development/Java
+
 License:        ASL 2.0
 URL:            http://maven.apache.org/plugins/maven-compiler-plugin
-#svn export http://svn.apache.org/repos/asf/maven/plugins/tags/maven-compiler-plugin-2.3.2 maven-compiler-plugin-2.3.2
-#tar caf maven-compiler-plugin-2.3.2.tar.xz maven-compiler-plugin-2.3.2/
-Source0:        %{name}-%{version}.tar.xz
+Source0:        http://repo1.maven.org/maven2/org/apache/maven/plugins/%{name}/%{version}/%{name}-%{version}-source-release.zip
 
 BuildArch: noarch
 
-BuildRequires: java-devel >= 0:1.6.0
-BuildRequires: maven
-BuildRequires: maven-plugin-plugin
-BuildRequires: maven-compiler-plugin
-BuildRequires: maven-jar-plugin
-BuildRequires: maven-install-plugin
-BuildRequires: maven-resources-plugin
-BuildRequires: maven-javadoc-plugin
-BuildRequires: maven-surefire-plugin
-BuildRequires: maven-surefire-provider-junit
-BuildRequires: maven-doxia-sitetools
-BuildRequires: maven-plugin-testing-harness
-
-Requires:      maven
-Requires:      jpackage-utils
-Requires:      java
-Requires(post):       jpackage-utils
-Requires(postun):     jpackage-utils
+BuildRequires:  java-devel >= 1:1.6.0
+BuildRequires:  maven-local
+BuildRequires:  maven-plugin-plugin
+BuildRequires:  maven-shared-incremental
+BuildRequires:  maven-surefire-provider-junit
+BuildRequires:  maven-doxia-sitetools
+BuildRequires:  maven-plugin-testing-harness
+BuildRequires:  maven-toolchain
+BuildRequires:  plexus-compiler >= 2.0
 
 Provides:       maven2-plugin-compiler = %{version}-%{release}
 Obsoletes:      maven2-plugin-compiler <= 0:2.0.8
@@ -38,55 +28,77 @@ Obsoletes:      maven2-plugin-compiler <= 0:2.0.8
 The Compiler Plugin is used to compile the sources of your project.
 
 %package javadoc
-Group:          Development/Java
+
 Summary:        Javadoc for %{name}
-Requires:       jpackage-utils
 
 %description javadoc
 API documentation for %{name}.
 
-
 %prep
-%setup -q #You may need to update this according to your Source0
+%setup -q 
 
 %build
-mvn-rpmbuild -e \
-        -Dmaven.test.failure.ignore=true \
-        install javadoc:javadoc
+%mvn_build -f
 
 %install
+%mvn_install
 
-# jars
-install -d -m 0755 %{buildroot}%{_javadir}
-install -m 644 target/%{name}-%{version}.jar   %{buildroot}%{_javadir}/%{name}.jar
+%files -f .mfiles
+%doc LICENSE NOTICE
 
-%add_to_maven_depmap org.apache.maven.plugins maven-compiler-plugin %{version} JPP maven-compiler-plugin
+%files javadoc -f .mfiles-javadoc
+%doc LICENSE NOTICE
 
-# poms
-install -d -m 755 %{buildroot}%{_mavenpomdir}
-install -pm 644 pom.xml \
-    %{buildroot}%{_mavenpomdir}/JPP-%{name}.pom
+%changelog
+* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 3.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
 
-# javadoc
-install -d -m 0755 %{buildroot}%{_javadocdir}/%{name}
-cp -pr target/site/api*/* %{buildroot}%{_javadocdir}/%{name}
+* Wed Apr 24 2013 Michal Srb <msrb@redhat.com> - 3.1-2
+- Build against proper maven-shared-incremental artifactId
 
-%pre javadoc
-# workaround for rpm bug, can be removed in F-17
-[ $1 -gt 1 ] && [ -L %{_javadocdir}/%{name} ] && \
-rm -rf $(readlink -f %{_javadocdir}/%{name}) %{_javadocdir}/%{name} || :
+* Wed Apr 24 2013 Michal Srb <msrb@redhat.com> - 3.1-1
+- Update to upstream version 3.1
 
-%post
-%update_maven_depmap
+* Tue Mar 05 2013 Michal Srb <msrb@redhat.com> - 3.0-2
+- Build against proper plexus-compiler
 
-%postun
-%update_maven_depmap
+* Tue Jan 15 2013 Mikolaj Izdebski <mizdebsk@redhat.com> - 3.0-1
+- Update to upstream version 3.0
+- Build with xmvn
+- Install license files, resolves: rhbz#895544
 
-%files
-%{_javadir}/*
-%{_mavenpomdir}/*
-%{_mavendepmapfragdir}/*
+* Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.5.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
-%files javadoc
-%{_javadocdir}/%{name}
+* Tue Jun 19 2012 Stanislav Ochotnicky <sochotnicky@redhat.com> - 2.5.1-1
+- Updated to latest upstream version (2.5.1)
 
+* Wed May 23 2012 Tomas Radej <tradej@redhat.com> - 2.4-1
+- Updated to latest upstream version
+- Guidelines fixes + Removed RPM workaround
+
+* Fri Jan 13 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.2-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
+* Mon Jun 27 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 2.3.2-4
+- Add few missing (Build)requires
+- Remove post(un) scriptlets with update_maven_depmap
+- Use new add_maven_depmap macro
+
+* Fri Jun 3 2011 Alexander Kurtakov <akurtako@redhat.com> 2.3.2-3
+- Do not require maven2.
+- Guidelines fixes.
+
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.3.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
+* Wed Jan 19 2011 Stanislav Ochotnicky <sochotnicky@redhat.com> - 2.3.2-1
+- Update to latest version (2.3.2)
+- Modifications according to new guidelines
+- Build with maven 3
+
+* Wed May 12 2010 Alexander Kurtakov <akurtako@redhat.com> 2.0.2-2
+- Add missing requires.
+
+* Tue May 11 2010 Alexander Kurtakov <akurtako@redhat.com> 2.0.2-1
+- Initial package.
