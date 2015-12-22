@@ -1,9 +1,9 @@
 %{?_javapackages_macros:%_javapackages_macros}
 Name:           maven-compiler-plugin
-Version:        3.1
-Release:        3.1%{?dist}
+Version:        3.3
+Release:        1.1
 Summary:        Maven Compiler Plugin
-
+Group:		Development/Java
 
 License:        ASL 2.0
 URL:            http://maven.apache.org/plugins/maven-compiler-plugin
@@ -11,15 +11,21 @@ Source0:        http://repo1.maven.org/maven2/org/apache/maven/plugins/%{name}/%
 
 BuildArch: noarch
 
-BuildRequires:  java-devel >= 1:1.6.0
 BuildRequires:  maven-local
-BuildRequires:  maven-plugin-plugin
-BuildRequires:  maven-shared-incremental
-BuildRequires:  maven-surefire-provider-junit
-BuildRequires:  maven-doxia-sitetools
-BuildRequires:  maven-plugin-testing-harness
-BuildRequires:  maven-toolchain
-BuildRequires:  plexus-compiler >= 2.0
+BuildRequires:  mvn(junit:junit)
+BuildRequires:  mvn(org.apache.maven:maven-artifact)
+BuildRequires:  mvn(org.apache.maven:maven-core)
+BuildRequires:  mvn(org.apache.maven:maven-plugin-api)
+BuildRequires:  mvn(org.apache.maven:maven-toolchain)
+BuildRequires:  mvn(org.apache.maven.plugins:maven-plugins:pom:)
+BuildRequires:  mvn(org.apache.maven.plugin-testing:maven-plugin-testing-harness)
+BuildRequires:  mvn(org.apache.maven.plugin-tools:maven-plugin-annotations)
+BuildRequires:  mvn(org.apache.maven.shared:maven-shared-incremental)
+BuildRequires:  mvn(org.apache.maven.shared:maven-shared-utils)
+BuildRequires:  mvn(org.codehaus.plexus:plexus-compiler-api) >= 2.0
+BuildRequires:  mvn(org.codehaus.plexus:plexus-compiler-manager)
+BuildRequires:  mvn(org.codehaus.plexus:plexus-container-default)
+BuildRequires:  mvn(org.mockito:mockito-core)
 
 Provides:       maven2-plugin-compiler = %{version}-%{release}
 Obsoletes:      maven2-plugin-compiler <= 0:2.0.8
