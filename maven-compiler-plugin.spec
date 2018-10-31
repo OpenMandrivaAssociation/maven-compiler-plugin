@@ -1,7 +1,7 @@
 %{?_javapackages_macros:%_javapackages_macros}
 Name:           maven-compiler-plugin
 Version:        3.3
-Release:        1.1
+Release:        1.2
 Summary:        Maven Compiler Plugin
 Group:		Development/Java
 
